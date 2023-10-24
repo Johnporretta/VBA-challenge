@@ -1,0 +1,71 @@
+Sub vbachall()
+
+    Dim ws As Worksheet
+    
+    
+    Dim lastrow As Long
+    Dim tickerrow As Long
+    Dim tick As String
+    Dim openprice As Double
+    Dim closeprice As Double
+    Dim totalvolume As Double
+    Dim stockvolume As Double
+    Dim pricechange As Double
+    Dim pricechangepercent As Double
+    
+    
+    For Each ws In ThisWorkbook.Worksheets
+        lastrow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+        
+        tickerrow = 2
+        openprice = 0
+        closeprice = 0
+        pricechange = 0
+        pricechangepercent = 0
+        totalvolume = 0
+        stockvolume = 0
+        
+        If ws.Cells(1, 9).Value = "" Then
+            ws.Cells(1, 9).Value = "Ticker"
+            ws.Cells(1, 10).Value = "Yearly Change"
+            ws.Cells(1, 11).Value = "Percent Change"
+            ws.Cells(1, 12).Value = "Total Stock Volume"
+        End If
+
+        For i = 2 To lastrow
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+                tick = ws.Cells(i, 1).Value
+                closeprice = ws.Cells(i, 6).Value
+                pricechange = closeprice - openprice
+
+                If openprice <> 0 Then
+                    pricechangepercent = (pricechange / openprice) * 100
+                End If
+
+                totalvolume = totalvolume + stockvolume
+
+                ws.Cells(tickerrow, 9).Value = tick
+                ws.Cells(tickerrow, 10).Value = pricechange
+                ws.Cells(tickerrow, 11).Value = pricechangepercent
+                ws.Cells(tickerrow, 12).Value = totalvolume
+
+                
+
+                tickerrow = tickerrow + 1
+
+                openprice = 0
+                closeprice = 0
+                pricechange = 0
+                pricechangepercent = 0
+                stockvolume = 0
+            ElseIf openprice = 0 Then
+                ' Open price
+                openprice = ws.Cells(i, 3).Value
+            End If
+
+            stockvolume = stockvolume + ws.Cells(i, 7).Value
+        Next i
+    Next ws
+End Sub
+
+
